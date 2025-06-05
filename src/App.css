@@ -1,0 +1,321 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f5f5f5;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.5;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem 1rem;
+}
+
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.controls-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.controls-container label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.controls-container select,
+.controls-container input[type="text"],
+.controls-container input[type="number"] {
+  margin-top: 0.25rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: #fafafa;
+  transition: border-color 0.2s;
+}
+
+.controls-container select:focus,
+.controls-container input[type="text"]:focus,
+.controls-container input[type="number"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.controls-container .slider-container {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.controls-container input[type="range"] {
+  width: 160px;
+  margin-top: 0.25rem;
+  accent-color: #007bff; 
+}
+
+.controls-container .button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #007bff;
+  background: #ffffff;
+  color: #007bff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.controls-container .button:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.controls-container .button.active {
+  background: #007bff;
+  color: #fff;
+}
+
+.controls-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.controls-right {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loader {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-style: italic;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; 
+}
+
+.book-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.book-table thead {
+  background: #e9ecef;
+}
+
+.book-table th,
+.book-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.book-table th {
+  font-weight: 600;
+  color: #222;
+}
+
+.book-table tbody tr:not(.expanded-row):hover {
+  background: #f8f9fa;
+  cursor: pointer;
+}
+
+.book-table thead tr th {
+  border-bottom: 2px solid #ccc;
+}
+
+.book-table .expanded-row td {
+  background: #fdfdfd;
+  padding: 1rem;
+  border-top: none;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.book-table .expanded-row td ul {
+  margin: 0.5rem 0 0 1rem;
+  padding: 0;
+  list-style: disc;
+}
+
+.book-table .expanded-row td ul li {
+  margin-bottom: 0.5rem;
+}
+
+.book-table .cover-cell img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.book-row-details td {
+  background-color: #fff;
+  padding: 0;
+  border: none;
+}
+
+.details-container {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.cover-container {
+  flex: 0 0 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cover-img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 220px;
+  background-color: #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.info-container {
+  flex: 1;
+}
+
+.info-container h2 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.3rem;
+}
+
+.info-container h2 em {
+  font-style: normal;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.info-container p {
+  margin: 0.15rem 0;
+  color: #555;
+}
+
+.reviews-block {
+  margin-top: 1rem;
+}
+
+.reviews-block h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.3rem;
+}
+
+.likes-block {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.likes-icon {
+  font-size: 1.2rem;
+  color: #1976d2;
+}
+
+.likes-count {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.single-review {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.single-review p {
+  margin: 0.3rem 0;
+  line-height: 1.4;
+}
+
+.single-review .reviewer-from {
+  margin-left: 1rem;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.app-main {
+  max-width: 1000px;
+  margin: 1rem auto;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .controls-left,
+  .controls-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .controls-right {
+    margin-left: 0;
+  }
+  .controls-container label {
+    width: 100%;
+  }
+  .controls-container input[type="range"] {
+    width: 100%;
+  }
+}
