@@ -20,11 +20,11 @@ function hashStringToNumber(str) {
 
 app.get("/api/books", (req, res) => {
   try {
-    const langRaw = String(req.query.lang || "en").toLowerCase(); // "en", "ru", "fr"
-    const seed = String(req.query.seed || "1"); // например "42"
-    const avgLikes = parseFloat(req.query.avgLikes) || 0; // дробное число, например 0.5 или 2.3
-    const avgReviews = parseFloat(req.query.avgReviews) || 0; // то же самое
-    let batch = parseInt(req.query.batch, 10) || 1; // страница, минимум 1
+    const langRaw = String(req.query.lang || "en").toLowerCase();
+    const seed = String(req.query.seed || "1");
+    const avgLikes = parseFloat(req.query.avgLikes) || 0;
+    const avgReviews = parseFloat(req.query.avgReviews) || 0;
+    let batch = parseInt(req.query.batch, 10) || 1;
     if (batch < 1) batch = 1;
 
     let faker, groupDigit;
@@ -50,7 +50,7 @@ app.get("/api/books", (req, res) => {
 
     const books = [];
     for (let i = 0; i < pageSize; i++) {
-      const globalIndex = startIndex + i; // реальный порядковый номер (id) книги
+      const globalIndex = startIndex + i;
       const combinedSeedString = `${seed}-${batch}-${globalIndex}`;
       const combinedSeedNum = hashStringToNumber(combinedSeedString);
       const rng = seedrandom(combinedSeedNum.toString());
@@ -59,7 +59,7 @@ app.get("/api/books", (req, res) => {
       const bookCode = Math.floor(rng() * 100000)
         .toString()
         .padStart(5, "0");
-      const checkDigit = Math.floor(rng() * 10).toString(); // от 0 до 9
+      const checkDigit = Math.floor(rng() * 10).toString();
       const isbn = `978-${groupDigit}-${publisherCode}-${bookCode}-${checkDigit}`;
 
       const title = faker.book.title();
