@@ -21,23 +21,29 @@ function hashStringToNumber(str) {
 app.get("/api/books", (req, res) => {
   try {
     const langRaw = String(req.query.lang || "en").toLowerCase();
-    const seed = String(req.query.seed || "1");
+    const seedValue = String(req.query.seed || "1");
     const avgLikes = parseFloat(req.query.avgLikes) || 0;
-    const avgReviews = parseFloat(req.query.avgReviews) || 0;
-    let batch = parseInt(req.query.batch, 10) || 1;
-    if (batch < 1) batch = 1;
+    const avgRev = parseFloat(req.query.avgReviews) || 0;
+    let batch = parseInt(req.query.batch, 10);
+    if (isNaN(batch) || batch < 1) batch = 1;
 
-    let faker, groupDigit;
+    let fakerInstance;
+    let isbnGroupDigit;
     if (langRaw === "ru") {
-      faker = fakerRU;
-      groupDigit = "7";
+      fakerInstance = fakerRU;
+      isbnGroupDigit = "7";
     } else if (langRaw === "fr") {
-      faker = fakerFR;
-      groupDigit = "2";
+      fakerInstance = fakerFR;
+      isbnGroupDigit = "2";
     } else {
-      faker = fakerEN;
-      groupDigit = "1";
+      fakerInstance = fakerEN;
+      isbnGroupDigit = "1";
     }
+
+    const combinedSeedString = `${seedValue}-${batch}`;
+    const combinedSeedNum = hashStringToNumber(combinedSeedString);
+    fakerInstance.seed(combinedSeedNum);
+    const rng = seedrandom(combinedSeedNum);
 
     let pageSize, startIndex;
     if (batch === 1) {
@@ -51,66 +57,50 @@ app.get("/api/books", (req, res) => {
     const books = [];
     for (let i = 0; i < pageSize; i++) {
       const globalIndex = startIndex + i;
-      const combinedSeedString = `${seed}-${batch}-${globalIndex}`;
-      const combinedSeedNum = hashStringToNumber(combinedSeedString);
-      const rng = seedrandom(combinedSeedNum.toString());
-
-      const publisherCode = rng().toFixed(3).slice(2, 5).padStart(3, "0");
-      const bookCode = Math.floor(rng() * 100000)
-        .toString()
-        .padStart(5, "0");
-      const checkDigit = Math.floor(rng() * 10).toString();
-      const isbn = `978-${groupDigit}-${publisherCode}-${bookCode}-${checkDigit}`;
-
-      const title = faker.book.title();
-      const format = "Paperback";
-      const author = `${faker.person.firstName()} ${faker.person.lastName()}`;
-      const publisher = faker.company.name();
-      const year = Math.floor(rng() * (2023 - 2000 + 1)) + 2000;
+      const publisherCode = String(
+        fakerInstance.number.int({ min: 0, max: 999 })
+      ).padStart(3, "0");
+      const bookCode = String(
+        fakerInstance.number.int({ min: 0, max: 99999 })
+      ).padStart(5, "0");
+      const checkDigit = String(fakerInstance.number.int({ min: 0, max: 9 }));
+      const isbn = `978-${isbnGroupDigit}-${publisherCode}-${bookCode}-${checkDigit}`;
+      const title = fakerInstance.commerce.productName();
+      const author = `${fakerInstance.person.firstName()} ${fakerInstance.person.lastName()}`;
+      const publisher = fakerInstance.company.name();
+      const year = fakerInstance.number.int({ min: 2000, max: 2023 });
 
       const baseLikes = Math.floor(avgLikes);
       const fracLikes = avgLikes - baseLikes;
+      const rValLikes = rng();
+      const likes = baseLikes + (rValLikes < fracLikes ? 1 : 0);
 
-      let likes = baseLikes;
-      if (rng() < fracLikes) {
-        likes = baseLikes + 1;
-      }
-      const baseRev = Math.floor(avgReviews);
-      const fracRev = avgReviews - baseRev;
-      let reviewsCount = baseRev;
-      if (rng() < fracRev) {
-        reviewsCount = baseRev + 1;
-      }
+      const baseRev = Math.floor(avgRev);
+      const fracRev = avgRev - baseRev;
+      const rValRev = rng();
+      const reviewsCount = baseRev + (rValRev < fracRev ? 1 : 0);
+
       const reviews = [];
       for (let r = 0; r < reviewsCount; r++) {
-        const reviewer = `${faker.person.firstName()} ${faker.person.lastName()}`;
-        const company = faker.company.name();
-        const text = faker.lorem.sentence();
+        const reviewer = `${fakerInstance.person.firstName()} ${fakerInstance.person.lastName()}`;
+        const company = fakerInstance.company.name();
+        const text = fakerInstance.lorem.sentence();
         reviews.push({ reviewer, company, text });
       }
-      const coverUrl =
-        `/api/cover?` +
-        `seed=${encodeURIComponent(seed)}` +
-        `&batch=${batch}` +
-        `&idx=${globalIndex}` +
-        `&lang=${langRaw}` +
-        `&title=${encodeURIComponent(title)}` +
-        `&author=${encodeURIComponent(author)}`;
+
+      const coverUrl = `https://picsum.photos/seed/${seedValue}-${batch}-${globalIndex}/200/300`;
 
       books.push({
         id: globalIndex,
         isbn,
-        coverUrl,
-        format,
         title,
         author,
-        publisher: `${publisher}, ${year}`,
+        publisher,
         year,
         likes,
         reviewsCount,
         reviews,
-        seed: seed,
-        batch: batch,
+        coverUrl,
       });
     }
 
@@ -231,16 +221,16 @@ app.get("/api/books/export", (req, res) => {
       for (let i = 0; i < take; i++) {
         const globalIndex = startIndex + i;
         const wc = faker.number.int({ min: 2, max: 4 });
-        const title = faker.lorem.words(wc);
-        const author = `${faker.person.firstName()} ${faker.person.lastName()}`;
-        const publisher = faker.company.name();
+        const title = fakerInstance.commerce.productName();
+        const author = `${fakerInstance.person.firstName()} ${fakerInstance.person.lastName()}`;
+        const publisher = fakerInstance.company.name();
         const maxL = Math.ceil(avgLikes * 2);
-        const likes = faker.number.int({ min: 0, max: maxL });
+        const likes = fakerInstance.number.int({ min: 0, max: maxL });
         const maxR = Math.ceil(avgReviews * 2);
-        const reviewsCount = faker.number.int({ min: 0, max: maxR });
+        const reviewsCount = fakerInstance.number.int({ min: 0, max: maxR });
         const reviews = [];
         for (let r = 0; r < reviewsCount; r++) {
-          reviews.push(faker.lorem.sentence());
+          reviews.push(fakerInstance.lorem.sentence());
         }
 
         arr.push({
